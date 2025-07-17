@@ -58,5 +58,5 @@ jobs:
         key: ${{ secrets.SERVER_SSH_KEY }}
         script: |
           cd /root
-          docker compose pull backend
-          docker compose up -d backend
+          docker-compose pull backend
+          docker-compose up -d backend
