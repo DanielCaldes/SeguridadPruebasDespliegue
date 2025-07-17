@@ -5,10 +5,11 @@ const User = require('../models/user.model');
 
 process.env.JWT_SECRET = 'testsecret';
 process.env.JWT_EXPIRES_IN = '1h';
+process.env.MONGO_URI = 'mongodb://localhost:27017/testdb_auth';
 
 describe('Auth API Integration Tests', () => {
     beforeAll(async () => {
-        const mongoUri = 'mongodb://localhost:27017/testdb_auth';
+        const mongoUri = process.env.MONGO_URI;
         await mongoose.connect(mongoUri);
     });
 

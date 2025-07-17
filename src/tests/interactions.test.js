@@ -1,4 +1,3 @@
-// MOCK debe ir lo primero
 jest.mock('../middlewares/authJWT.middleware', () => {
     return (req, res, next) => {
         if (!global.currentUserId) {
@@ -19,8 +18,10 @@ const User = require('../models/user.model');
 let app;
 let currentUser, otherUser;
 
+process.env.MONGO_URI = 'mongodb://localhost:27017/testdb_interactions';
+
 beforeAll(async () => {
-    const mongoUri = 'mongodb://localhost:27017/testdb_interactions';
+    const mongoUri = process.env.MONGO_URI;
     await mongoose.connect(mongoUri);
 
     app = express();

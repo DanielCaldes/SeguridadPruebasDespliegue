@@ -17,8 +17,10 @@ const User = require('../models/user.model');
 let app;
 let currentUser;
 
+process.env.MONGO_URI = 'mongodb://localhost:27017/testdb_users';
+
 beforeAll(async () => {
-    const mongoUri = 'mongodb://localhost:27017/testdb_users';
+    const mongoUri = process.env.MONGO_URI;
     await mongoose.connect(mongoUri);
 
     app = express();
