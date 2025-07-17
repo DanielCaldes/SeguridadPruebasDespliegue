@@ -2,16 +2,13 @@ version: '3.8'
 
 services:
   backend:
-    build: .
-    container_name: pairup-backend
+    image: dacaldes/pairup-backend:latest
     ports:
       - "3000:3000"
     depends_on:
       - mongo
     environment:
-      MONGO_URI: mongodb://mongo:27017/testdb
-    volumes:
-      - .:/app
+      MONGO_URI: mongodb://mongo:27017/pairup_db
     restart: unless-stopped
 
   mongo:
