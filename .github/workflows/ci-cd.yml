@@ -50,7 +50,7 @@ jobs:
     - name: Push Docker image
       run: docker push dacaldes/pairup-backend:latest
 
-    - name: Deploy to server
+    - name: Deploy to server via SSH
       uses: appleboy/ssh-action@v0.1.7
       with:
         host: ${{ secrets.SERVER_IP }}
@@ -58,5 +58,8 @@ jobs:
         key: ${{ secrets.SERVER_SSH_KEY }}
         script: |
           cd /root
-          docker-compose pull backend
-          docker-compose up -d backend
+          docker-compose down
+          docker image rm dacaldes/pairup-backend:latest || true
+          docker-compose pull
+          docker-compose up -d --build
+
