@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   backend:
     image: dacaldes/pairup-backend:latest
@@ -7,8 +5,8 @@ services:
       - "3000:3000"
     depends_on:
       - mongo
-    environment:
-      MONGO_URI: mongodb://mongo:27017/pairup_db
+    env_file:
+      - .env
     restart: unless-stopped
 
   mongo:
