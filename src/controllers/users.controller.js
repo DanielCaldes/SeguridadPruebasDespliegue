@@ -1,13 +1,8 @@
-const mongoose = require('mongoose')
 const User = require("../models/user.model");
 
 exports.getProfile = async (req, res) => {
     try{
         const id = req.params.id;
-
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: "ID no válido" });
-        }
 
         const user = await User.findById(id);
 
@@ -26,10 +21,6 @@ exports.editProfile = async (req, res) => {
     try{
         const id = req.params.id;
         const { name, description, gender, age, location } = req.body;
-
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: "ID no válido" });
-        }
 
         if (req.user.id !== id) {
             return res.status(403).json({ message: "No tienes permiso para editar esta cuenta" });
@@ -54,10 +45,6 @@ exports.editProfile = async (req, res) => {
             } 
         );
 
-        if (!updatedUser) {
-            return res.status(404).json({ message: "Usuario no encontrado" });
-        }
-
         return res.status(200).json( {user : updatedUser} );
 
     }catch(err){
@@ -69,10 +56,6 @@ exports.editProfile = async (req, res) => {
 exports.deleteProfile = async (req, res) => {
     try{
         const id = req.params.id;
-
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: "ID no válido" });
-        }
 
         if (req.user.id !== id) {
             return res.status(403).json({ message: "No tienes permiso para eliminar esta cuenta" });

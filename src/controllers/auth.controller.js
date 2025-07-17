@@ -33,7 +33,7 @@ exports.register = async (req, res) => {
         return res.status(200).json( { message : "Usuario registrado correctamente" } );
 
     }catch(err){
-        console.error('Error en register:', error);
+        console.error('Error en register:', err);
         res.status(500).json({ message: 'Error del servidor' });
     }
 }

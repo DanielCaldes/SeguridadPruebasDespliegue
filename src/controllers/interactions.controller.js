@@ -1,4 +1,3 @@
-const mongoose = require('mongoose')
 const User = require("../models/user.model");
 
 exports.searchUser = async (req, res) =>{
@@ -24,16 +23,8 @@ exports.swipeUser = async (req, res) => {
     const targetUserId = req.params.targetId;
     let match = false;
 
-    if (liked === undefined || typeof liked !== 'boolean') {
-        return res.status(400).json({ message: "`liked` debe ser booleano (true o false)" });
-    }
-
     if (currentUserId === targetUserId) {
         return res.status(400).json({ message: "No puedes hacer swipe sobre ti mismo" });
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(targetUserId)) {
-        return res.status(400).json({ message: "El usuario al que intentas reaccionar no existe o su ID no es válido." });
     }
 
     const currentUser = await User.findById(currentUserId);
@@ -77,12 +68,12 @@ exports.deleteMatch = async (req, res) =>{
     const currentUserId = req.user.id;
     const targetUserId = req.params.targetId;
 
-    if (!mongoose.Types.ObjectId.isValid(targetUserId)) {
-        return res.status(400).json({ message: "El usuario del match que intentas borrar no existe o su ID no es válido." });
-    }
-
     const currentUser = await User.findById(currentUserId);
     const targetUser = await User.findById(targetUserId);
+
+    if (!currentUser || !targetUser) {
+      return res.status(404).json({ message: "Usuario no encontrado." });
+    }
 
     currentUser.matches = currentUser.matches.filter(id => id.toString() !== targetUserId);
     targetUser.matches = targetUser.matches.filter(id => id.toString() !== currentUserId);
