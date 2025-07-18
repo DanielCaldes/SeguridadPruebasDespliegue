@@ -156,10 +156,7 @@ Esta configurado en el archivo ``ci-cd.yml``
     "description": "",
     "gender": "",
     "age": null,
-    "location": "",
-    "swipes":[],
-    "likes": [],
-    "matches": []
+    "location": ""
   }
   ```
 #### 2. Cambiar información de un usuario
