@@ -22,14 +22,20 @@ describe('userController', () => {
                 matches: ['match1'],
                 _id: 'currentUserId'
             });
-            User.find.mockResolvedValue(['candidate1', 'candidate2']);
+            User.find.mockResolvedValue([
+                { _id: 'candidate1', name: "", description: "", gender: "", age: null, location: "" },
+                { _id: 'candidate2', name: "", description: "", gender: "", age: null, location: "" }
+            ]);
 
             await interactionsController.searchUser(req, res);
 
             expect(User.findById).toHaveBeenCalledWith('currentUserId');
             expect(User.find).toHaveBeenCalledWith({ _id: { $nin: ['swipe1', 'like1', 'match1', 'currentUserId'] } });
             expect(status).toHaveBeenCalledWith(200);
-            expect(json).toHaveBeenCalledWith(['candidate1', 'candidate2']);
+            expect(json).toHaveBeenCalledWith([
+                { _id: 'candidate1', name: "", description: "", gender: "", age: null, location: "" },
+                { _id: 'candidate2', name: "", description: "", gender: "", age: null, location: "" }
+            ]);
         });
     });
 
@@ -110,7 +116,10 @@ describe('userController', () => {
 
     describe('getMatches', () => {
         it('debe devolver la lista de matches del usuario actual', async () => {
-            const matches = [{ _id: 'match1' }, { _id: 'match2' }];
+            const matches = [
+            { _id: 'match1', name: "", description: "", gender: "", age: null, location: "" },
+            { _id: 'match2', name: "", description: "", gender: "", age: null, location: "" }
+            ];
             User.findById.mockReturnValue({
                 populate: jest.fn().mockResolvedValue({ matches })
             });

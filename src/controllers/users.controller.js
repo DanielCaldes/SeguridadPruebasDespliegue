@@ -10,7 +10,16 @@ exports.getProfile = async (req, res) => {
             return res.status(404).json({ message: "Usuario no encontrado" });
         }
 
-        return res.status(200).json( user );
+        const profile = {
+            _id: user._id,
+            name: user.name || "",
+            description: user.description || "",
+            gender: user.gender || "",
+            age: user.age || null,
+            location: user.location || ""
+        };
+
+        return res.status(200).json( profile );
     }catch(err){
         console.error('Error en getAccount:', err);
         res.status(500).json({ message: 'Error del servidor' });
@@ -45,7 +54,16 @@ exports.editProfile = async (req, res) => {
             } 
         );
 
-        return res.status(200).json( {user : updatedUser} );
+        const profile = {
+            _id: updatedUser._id,
+            name: updatedUser.name || "",
+            description: updatedUser.description || "",
+            gender: updatedUser.gender || "",
+            age: updatedUser.age ?? null,
+            location: updatedUser.location || ""
+        };
+
+        return res.status(200).json( profile );
 
     }catch(err){
         console.error('Error en getAccount:', err);

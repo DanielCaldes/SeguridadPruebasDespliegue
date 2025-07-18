@@ -59,7 +59,7 @@ describe('Users API Integration', () => {
 
         expect(res.status).toBe(200);
         expect(res.body.name).toBe(currentUser.name);
-        expect(res.body.email).toBe(currentUser.email);
+        expect(res.body._id).toBe(currentUser._id.toString());
     });
 
     test('PUT /api/users/:id - should update profile when authorized', async () => {
@@ -70,7 +70,7 @@ describe('Users API Integration', () => {
             .send({ name: newName });
 
         expect(res.status).toBe(200);
-        expect(res.body.user.name).toBe(newName);
+        expect(res.body.name).toBe(newName);
 
         const userInDb = await User.findById(currentUser._id);
         expect(userInDb.name).toBe(newName);

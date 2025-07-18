@@ -65,7 +65,7 @@ describe('Interactions API Integration', () => {
         const res = await request(app).get('/api/search');
         expect(res.status).toBe(200);
         expect(res.body).toHaveLength(1);
-        expect(res.body[0].email).toBe(otherUser.email);
+        expect(res.body[0]._id).toBe(otherUser._id.toString());
     });
 
     test('POST /swipe/:targetId with like but no match', async () => {
@@ -108,7 +108,7 @@ describe('Interactions API Integration', () => {
 
         expect(res.status).toBe(200);
         expect(res.body).toHaveLength(1);
-        expect(res.body[0].email).toBe(otherUser.email);
+        expect(res.body[0]._id).toBe(otherUser._id.toString());
     });
 
     test('DELETE /matches/:targetId removes a match from both users', async () => {

@@ -30,8 +30,15 @@ describe('User Profile Controller', () => {
             expect(json).toHaveBeenCalledWith({ message: "Usuario no encontrado" });
         });
 
-        it('should return user data if found', async () => {
-            const userMock = { name: 'John Doe' };
+       it('should return user data if found', async () => {
+            const userMock = { 
+                _id: 'userId',
+                name: 'John Doe',
+                description: '',
+                gender: '',
+                age: null,
+                location: ''
+            };
             req.params.id = 'userId';
             User.findById.mockResolvedValue(userMock);
 
@@ -40,6 +47,7 @@ describe('User Profile Controller', () => {
             expect(status).toHaveBeenCalledWith(200);
             expect(json).toHaveBeenCalledWith(userMock);
         });
+
 
         it('should return 500 on error', async () => {
             req.params.id = 'userId';
@@ -86,6 +94,7 @@ describe('User Profile Controller', () => {
             };
 
             const existingUser = {
+                _id: 'user1',
                 name: 'Old Name',
                 description: 'Old desc',
                 gender: 'F',
@@ -107,18 +116,26 @@ describe('User Profile Controller', () => {
             expect(User.findByIdAndUpdate).toHaveBeenCalledWith(
                 'user1',
                 {
-                name: 'New Name',
-                description: 'New desc',
-                gender: 'M',
-                age: 30,
-                location: 'NYC',
+                    name: 'New Name',
+                    description: 'New desc',
+                    gender: 'M',
+                    age: 30,
+                    location: 'NYC',
                 },
                 { new: true }
             );
 
             expect(status).toHaveBeenCalledWith(200);
-            expect(json).toHaveBeenCalledWith({ user: updatedUser });
+            expect(json).toHaveBeenCalledWith({
+                _id: updatedUser._id,
+                name: updatedUser.name,
+                description: updatedUser.description,
+                gender: updatedUser.gender,
+                age: updatedUser.age,
+                location: updatedUser.location,
+            });
         });
+
 
         it('should return 500 on error', async () => {
             req.params.id = 'user1';

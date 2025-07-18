@@ -14,7 +14,16 @@ exports.searchUser = async (req, res) =>{
 
     const candidates = await User.find({ _id: { $nin: excludedIds } });
 
-    res.status(200).json(candidates);
+    const filteredCandidates = candidates.map(user => ({
+            _id: user._id,
+            name: user.name || "",
+            description: user.description || "",
+            gender: user.gender || "",
+            age: user.age ?? null,
+            location: user.location || ""
+        }));
+
+    res.status(200).json(filteredCandidates);
 }
 
 exports.swipeUser = async (req, res) => {
@@ -60,8 +69,22 @@ exports.swipeUser = async (req, res) => {
 };
 
 exports.getMatches = async (req, res) =>{
-    const currentUser = await User.findById(req.user.id).populate('matches');
-    res.status(200).json(currentUser.matches);
+    const currentUser = await User.findById(req.user.id)
+        .populate({
+            path: 'matches',
+            select: '_id name description gender age location'
+        });
+
+    const matches = currentUser.matches.map(user => ({
+        _id: user._id,
+        name: user.name || "",
+        description: user.description || "",
+        gender: user.gender || "",
+        age: user.age ?? null,
+        location: user.location || ""
+    }));
+
+    res.status(200).json(matches);
 }
 
 exports.deleteMatch = async (req, res) =>{
