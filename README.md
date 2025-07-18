@@ -2,7 +2,13 @@
 # PairUp App
 
 Este proyecto tiene como objetivo automatizar el proceso de despliegue de una aplicación **Node.js** utilizando **Docker**, **GitHub Actions** y **DigitalOcean**. La aplicación se conecta a una base de datos **MongoDB** y ejecuta pruebas automatizadas antes de cada despliegue.
+
 La aplicación desarrollada para el despliegue se centra en conectar personas mostrando sus perfiles mediante un sistema sencillo de interacción tipo "like/dislike" estilo Tinder.
+
+Despliegue temporal en DigitalOcean. Si no está disponible, descarga el proyecto y ejecútalo localmente.
+```url
+  http://165.227.229.142:3000/api/
+```
 
 ## Características
 - **Funcionalidades de la API**:
@@ -88,7 +94,231 @@ El despliegue se realiza automáticamente mediante GitHub Actions cada vez que s
 
 Esta configurado en el archivo ``ci-cd.yml``
 
+## Endpoints
 
+### Autentificación
+#### 1. Registrar un usuario
+
+- **Método**: POST
+  ```url
+  /api/auth/register
+  ```
+- **Descripción**: Crea un nuevo usuario y lo agrega a la base de datos.
+- **Cuerpo de la solicitud** (JSON):
+  ```json
+  {
+    "name": "myName",
+    "email": "myEmail@example.com",
+    "password": "myPassword"
+  }
+  ```
+- **Respuesta**:
+  ```json
+  {
+    "message": "Usuario registrado correctamente"
+  }
+  ```
+  
+#### 2. Iniciar sesión con un usuario
+  - **Método**: POST
+  ```url
+  /api/auth/login
+  ```
+- **Descripción**: Autentica un usuario devolviendo el token de acceso.
+- **Cuerpo de la solicitud** (JSON):
+  ```json
+  {
+    "email": "myEmail@example.com",
+    "password": "myPassword"
+  }
+  ```
+- **Respuesta**:
+  ```json
+  {
+    "id": "userId",
+    "token":"myToken"
+  }
+  ```
+
+### Usuarios (Requiere token de login en el encabezado Authorization con esquema Bearer)
+#### 1. Obtener información de un usuario
+
+- **Método**: GET
+  ```url
+  /api/users/:id
+  ```
+- **Descripción**: Obtiene la información de un usuario por id.
+- **Respuesta**:
+  ```json
+  {
+    "_id": "userId",
+    "name": "myName",
+    "description": "",
+    "gender": "",
+    "age": null,
+    "location": "",
+    "swipes":[],
+    "likes": [],
+    "matches": []
+  }
+  ```
+#### 2. Cambiar información de un usuario
+  - **Método**: PUT
+  ```url
+  /api/users/:id
+  ```
+- **Descripción**: Cambia la información de un usuario.
+- **Cuerpo de la solicitud** (JSON): (Todos son opcionales, mínimo pasar uno)
+  ```json
+  {
+    "name": "newName",
+    "description": "newDescription",
+    "gender": "male",
+    "age": 21,
+    "location": "Spain"
+  }
+  ```
+- **Respuesta**: (Información actualizada del usuario)
+  ```json
+  {
+    "_id": "userId",
+    "name": "newName",
+    "description": "newDescription",
+    "gender": "male",
+    "age": 21,
+    "location": "Spain"
+  }
+  ```
+#### 3. Borrar un usuario
+  - **Método**: DELETE
+  ```url
+  /api/users/:id
+  ```
+- **Descripción**: Borra a un usuario si coincide con el token de autenticación.
+- **Respuesta**:
+  ```json
+  {
+    "message" : "Usuario borrado <id>"
+  }
+  ```
+
+### Interacción (Requiere token de login en el encabezado Authorization con esquema Bearer)
+#### 1. Buscar usuarios
+
+- **Método**: GET
+  ```url
+  /api/search
+  ```
+- **Descripción**: Obtiene una lista de usuarios a los que no se haya reaccionado previamente.
+- **Respuesta**:
+  ```json
+  [{
+    "_id": "userId",
+    "name": "otherName",
+    "description": "",
+    "gender": "",
+    "age": null,
+    "location": ""
+  }]
+  ```
+
+#### 2. Reaccionar a un usuario
+  - **Método**: POST
+  ```url
+  /api/swipe/:targetId
+  ```
+- **Descripción**: Permite reaccionar a un usuario con like(true) o dislike(false).
+- **Cuerpo de la solicitud** (JSON):
+  ```json
+  {
+    "liked": true
+  }
+  ```
+- **Respuesta**:
+  ```json
+  {
+    "message": "Like registrado"
+  }
+  ```
+
+#### 3. Ver matches
+  - **Método**: GET
+  ```url
+  /api/matches
+  ```
+- **Descripción**: Devuelve una lista con los usuarios con los que ha tenido un match.
+- **Respuesta**:
+  ```json
+  [{
+    "_id": "userId",
+    "name": "otherName",
+    "description": "",
+    "gender": "",
+    "age": null,
+    "location": ""
+  }]
+  ```
+  
+#### 4. Borrar un match
+  - **Método**: DELETE
+  ```url
+  /api/matches/:targetId
+  ```
+- **Descripción**: Permite borrar un match con un usuario.
+- **Respuesta**:
+  ```json
+  {
+    "message": "Match eliminado"
+  }
+  ```
+## Estructura del proyecto
+```
+SeguridadPruebasDespliegue/
+├── .github/
+│   └── workflows/
+│       └── ci-cd.yml               # Configuración de CI/CD con GitHub Actions
+├── src/
+│   ├── controllers/                # Lógica de negocio por entidad
+│   │   ├── auth.controller.js              # Controlador de autenticación
+│   │   ├── auth.controller.test.js        # Pruebas unitarias de autenticación
+│   │   ├── interactions.controller.js     # Controlador de interacciones
+│   │   ├── interactions.controller.test.js# Pruebas de interacciones
+│   │   ├── users.controller.js            # Controlador de usuarios
+│   │   └── users.controller.test.js       # Pruebas de usuarios
+│   ├── database/
+│   │   └── database.js             # Configuración y conexión de Mongoose
+│   ├── middlewares/               # Middlewares personalizados
+│   │   ├── authJWT.middleware.js            # Verificación de JWT
+│   │   ├── authJWT.middleware.test.js       # Test de middleware JWT
+│   │   ├── rateLimit.middleware.js          # Limitador de peticiones
+│   │   ├── rateLimit.middleware.test.js     # Test de rate limiting
+│   │   ├── sanitizeHTML.middleware.js       # Sanitización de HTML
+│   │   ├── sanitizeHTML.middleware.test.js  # Test de sanitización
+│   │   └── validateJoi.middleware.js        # Validación con Joi
+│   ├── models/
+│   │   └── user.model.js           # Esquema de usuario con Mongoose
+│   ├── routes/                     # Definición de rutas del servidor
+│   │   ├── auth.routes.js                   # Rutas de autenticación
+│   │   ├── interactions.router.js          # Rutas de interacciones
+│   │   └── users.router.js                 # Rutas de usuarios
+│   ├── test/                       # Pruebas de integración/end-to-end
+│   │   ├── auth.test.js
+│   │   ├── interactions.test.js
+│   │   └── users.test.js
+│   └── validations/               # Esquemas de validación con Joi
+│       ├── auth.validation.js
+│       ├── interactions.validation.js
+│       └── users.validation.js
+├── .dockerignore                  # Exclusiones para contextos Docker
+├── .env                           # Variables de entorno (local)
+├── .env.example                   # Ejemplo base de variables de entorno
+├── app.js                         # Configuración de la aplicación Express
+├── docker-compose.yml            # Orquestación de contenedores
+├── Dockerfile                    # Imagen Docker del backend
+├── index.js                      # Punto de entrada de la app
+├── package.json                  # Dependencias y scripts del proyecto
+└── package-lock.json             # Versión exacta de dependencias
+```
 ## Licencia
 
 Este proyecto está bajo la Licencia MIT. Consulta el archivo LICENSE para más detalles.
